@@ -8,7 +8,12 @@ const CurrencyConverter = () => {
     const [chosenPrimaryCurrency, setChosenPrimaryCurrency] = useState('BTC')
     const [chosenSecondaryCurrency, setChosenSecondaryCurrency] = useState('BTC')
     const [amount, setAmount] = useState(1)
-    const [exchangeRate, setExchangeRate] = useState(0)
+    
+    const [exchangedData, setExchangedData] = useState({
+        primaryCurrency: 'BTC',
+        secondaryCurrency: 'BTC',
+        ExchangeRate: 0
+    })
     const [result, setResult] = useState(0)
 
     // console.log(chosenPrimaryCurrency + " primary")
@@ -22,14 +27,21 @@ const CurrencyConverter = () => {
         params: {from_currency: 'BTC', function: 'CURRENCY_EXCHANGE_RATE', to_currency: 'USD'},
         headers: {
             'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-            'x-rapidapi-key': '4d0ce39ae0mshc598194422c08fcp14507cjsn251f20969c99'
+            'x-rapidapi-key': process.env.REACT_APP_RAPID_API_KEY
         }
         };
 
         axios.request(options).then((response) => {
             console.log(response.data['Realtime Currency Exchange Rate']['5. Exchange Rate'])
-            setExchangeRate(response.data['Realtime Currency Exchange Rate']['5. Exchange Rate'])
+            // setExchangeRate(response.data['Realtime Currency Exchange Rate']['5. Exchange Rate'])
             setResult(response.data['Realtime Currency Exchange Rate']['5. Exchange Rate'] * amount)
+            // setPrimaryCurrencyRate(chosenPrimaryCurrency)
+            // setSecondaryCurrencyRate(chosenSecondaryCurrency)
+            setExchangedData({
+                primaryCurrency: chosenPrimaryCurrency,
+                secondaryCurrency: chosenSecondaryCurrency,
+                exchangeRate: response.data['Realtime Currency Exchange Rate']['5. Exchange Rate']
+            })
         }).catch((error) => {
             console.error(error)
         });
@@ -92,9 +104,8 @@ const CurrencyConverter = () => {
             </div>
 
             <ExchangeRate 
-                exchangeRate={exchangeRate}
-                chosenPrimaryCurrency={chosenPrimaryCurrency}
-                chosenSecondaryCurrency={chosenSecondaryCurrency}
+            // props
+                exchangedData={exchangedData}
             />
         </div>
     );
